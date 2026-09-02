@@ -13,11 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TodoStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
 model Todo {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   title     String
-  isDone    Boolean  @default(false)
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status    TodoStatus @default(TODO)
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
