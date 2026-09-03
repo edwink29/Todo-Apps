@@ -39,7 +39,9 @@ export function TodoCard({ item, onDelete, onEdit }: TodoCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className="group relative flex items-start justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_5px_14px_-12px_rgba(30,41,59,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md cursor-pointer"
+      className={`group relative flex items-start justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_5px_14px_-12px_rgba(30,41,59,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md cursor-pointer ${
+        isOpen ? "z-20" : "z-0"
+      }`}
     >
       <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-400 transition group-hover:bg-indigo-500" />
       <p className="flex-1 text-sm font-medium leading-5 text-slate-700">{item.title}</p>
