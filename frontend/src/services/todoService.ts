@@ -33,14 +33,16 @@ export const todoService = {
     });
   },
 
-  updateStatusAndOrder: async (
-    id: string,
-    status: "TODO" | "IN_PROGRESS" | "DONE",
-    order: number,
-  ): Promise<Todo> => {
-    return fetchAPI<Todo>(`${environment.API_URL}/todos/${id}`, {
+  reorder: async (
+    items: {
+      id: string;
+      status: "TODO" | "IN_PROGRESS" | "DONE";
+      order: number;
+    }[],
+  ): Promise<void> => {
+    return fetchAPI<void>(`${environment.API_URL}/todos/reorder`, {
       method: "PATCH",
-      body: JSON.stringify({ status, order }),
+      body: JSON.stringify(items),
     });
   },
 };

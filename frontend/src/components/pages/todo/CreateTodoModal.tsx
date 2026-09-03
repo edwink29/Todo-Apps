@@ -30,9 +30,10 @@ export function CreateTodoModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl border border-slate-200 p-6 w-full max-w-md shadow-xl">
-        <h2 className="text-lg font-bold text-slate-800 mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-3xl border border-white bg-white p-6 shadow-2xl sm:p-7">
+        <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Task baru</p>
+        <h2 className="mb-5 text-xl font-bold tracking-tight text-slate-800">
           Tambah Todo Baru
         </h2>
 
@@ -42,7 +43,7 @@ export function CreateTodoModal({
             placeholder="Masukkan judul tugas..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
             autoFocus
           />
 
@@ -50,14 +51,14 @@ export function CreateTodoModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
+              className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg cursor-pointer disabled:opacity-50"
+              className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? "Menyimpan..." : "Simpan"}
             </button>
