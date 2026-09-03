@@ -1,4 +1,13 @@
 import { useState, useEffect } from "react";
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+
+import { KanbanColumn } from "./KanbanColumn";
 import { TodoCard } from "./TodoCard";
 import { CreateTodoModal } from "./CreateTodoModal";
 import { EditTodoModal } from "./EditTodoModal";
@@ -12,6 +21,14 @@ export function TodoListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoForEdit, setSelectedTodoForEdit] = useState<Todo | null>(
     null,
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
   );
 
   const fetchTodos = async () => {
@@ -28,10 +45,6 @@ export function TodoListPage() {
     }
   };
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
   const handleDelete = async (id: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus todo ini?")) return;
 
@@ -41,6 +54,47 @@ export function TodoListPage() {
     } catch (err) {
       console.error("Error deleting todo:", err);
       alert("Gagal menghapus todo. Silakan coba lagi.");
+    }
+  };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeTodo = todos.find((t) => t.id === activeId);
+    if (!activeTodo) return;
+
+    let newStatus: "TODO" | "IN_PROGRESS" | "DONE" = activeTodo.status;
+
+    if (["TODO", "IN_PROGRESS", "DONE"].includes(overId)) {
+      newStatus = overId as "TODO" | "IN_PROGRESS" | "DONE";
+    } else {
+      const overTodo = todos.find((t) => t.id === overId);
+      if (overTodo) {
+        newStatus = overTodo.status;
+      }
+    }
+
+    if (activeTodo.status === newStatus) return;
+
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === activeId ? { ...todo, status: newStatus } : todo,
+      ),
+    );
+
+    try {
+      await todoService.update(activeId, activeTodo.title, newStatus);
+    } catch (error) {
+      console.error("Gagal memperbarui status todo:", error);
+      fetchTodos();
     }
   };
 
@@ -77,60 +131,39 @@ export function TodoListPage() {
         )}
 
         {!isLoading && !errorMsg && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col gap-3 min-h-75">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="font-semibold text-slate-700">TODO</span>
-                <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                  {todoList.length}
-                </span>
-              </div>
-              {todoList.map((item) => (
-                <TodoCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onEdit={setSelectedTodoForEdit}
-                />
-              ))}
-            </div>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <KanbanColumn
+                id="TODO"
+                title="TODO"
+                count={todoList.length}
+                todos={todoList}
+                titleColorClass="text-slate-700"
+                onDelete={handleDelete}
+                onEdit={(todo) => setSelectedTodoForEdit(todo)}
+              />
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col gap-3 min-h-75">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="font-semibold text-amber-600">
-                  IN PROGRESS
-                </span>
-                <span className="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-200/60">
-                  {inProgressList.length}
-                </span>
-              </div>
-              {inProgressList.map((item) => (
-                <TodoCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onEdit={setSelectedTodoForEdit}
-                />
-              ))}
-            </div>
+              <KanbanColumn
+                id="IN_PROGRESS"
+                title="IN PROGRESS"
+                count={inProgressList.length}
+                todos={inProgressList}
+                titleColorClass="text-amber-600"
+                onDelete={handleDelete}
+                onEdit={(todo) => setSelectedTodoForEdit(todo)}
+              />
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col gap-3 min-h-75">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="font-semibold text-emerald-600">DONE</span>
-                <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full border border-emerald-200/60">
-                  {doneList.length}
-                </span>
-              </div>
-              {doneList.map((item) => (
-                <TodoCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onEdit={setSelectedTodoForEdit}
-                />
-              ))}
+              <KanbanColumn
+                id="DONE"
+                title="DONE"
+                count={doneList.length}
+                todos={doneList}
+                titleColorClass="text-emerald-600"
+                onDelete={handleDelete}
+                onEdit={(todo) => setSelectedTodoForEdit(todo)}
+              />
             </div>
-          </div>
+          </DndContext>
         )}
       </div>
       <CreateTodoModal

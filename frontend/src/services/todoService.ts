@@ -16,10 +16,14 @@ export const todoService = {
     });
   },
 
-  update: async (id: string, title: string): Promise<Todo> => {
+  update: async (
+    id: string,
+    title: string,
+    status?: "TODO" | "IN_PROGRESS" | "DONE",
+  ): Promise<Todo> => {
     return fetchAPI<Todo>(`${environment.API_URL}/todos/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, status }),
     });
   },
 

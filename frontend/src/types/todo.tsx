@@ -27,3 +27,13 @@ export interface EditTodoModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+export interface KanbanColumnProps {
+  id: string; // "TODO" | "IN_PROGRESS" | "DONE"
+  title: string;
+  count: number;
+  todos: Todo[];
+  titleColorClass: string;
+  onDelete: (id: string) => void;
+  onEdit: (todo: Todo) => void;
+}
