@@ -1,7 +1,5 @@
-import React from "react";
+import { TodoListPage } from "./components/pages/todo/TodoListPage";
 
-const App = () => {
-  return <div className="text-5xl">App</div>;
-};
-
-export default App;
+export default function App() {
+  return <TodoListPage />;
+}

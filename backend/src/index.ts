@@ -1,6 +1,12 @@
 import { Elysia } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { todoModule } from "./modules/todo";
 
-const app = new Elysia().use(todoModule).listen(3000);
+const app = new Elysia()
+  .use(cors()) 
+  .use(todoModule)
+  .listen(3000);
 
-console.log(`Server jalan di http://localhost:${app.server?.port}`);
+console.log(
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+);
